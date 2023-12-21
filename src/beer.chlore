@@ -1,0 +1,44 @@
+:putfmt
+  pushi 0 pushi 3 invoke
+  ret
+
+:putstr
+  pushi 0 pushi 0 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:beer_run
+  if (dup pushi 1 eq) {
+    pushp "\
+1 bottle of beer on the wall, 1 bottle of beer.\n\
+Take one down and pass it around, no more bottles of beer on the wall.\n\
+No more bottles of beer on the wall, no more bottles of beer.\n\
+Go to the store and buy some more, 99 bottles of beer on the wall.\n"
+    pushp putstr call
+    ret
+  }
+
+  dup
+  dup
+
+  pushp "%d bottles of beer on the wall, %d bottles of beer.\n"
+  pushp putfmt call
+
+  pushi 1 swap subi dup
+  pushp "Take one down and pass it around, %d bottles of beer on the wall.\n"
+  pushp putfmt call
+
+  pushp beer_run rcall
+
+:beer
+  pushi 99
+  pushp beer_run call
+  ret
+
+:main
+  pushp init call
+  pushp beer call
+  hlt

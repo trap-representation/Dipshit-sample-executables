@@ -1,0 +1,15 @@
+:putfmt
+  pushi 0 pushi 3 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:main
+  pushp init call
+  pushp "change my mind"
+  pushp 48
+  pushp "%d is the best number, %s\n"
+  pushp putfmt call
+  hlt

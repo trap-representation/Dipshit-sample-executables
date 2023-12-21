@@ -1,0 +1,13 @@
+:putstr
+  pushi 0 pushi 0 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:main
+  pushp init call
+  pushp "Hello, World!\n"
+  pushp putstr call
+  hlt

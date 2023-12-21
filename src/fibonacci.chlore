@@ -1,0 +1,34 @@
+:putchar
+  pushi 0 pushi 2 invoke
+  ret
+
+:puti
+  pushi 0 pushi 1 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:fib
+  if (dup pushi 1 ge) {
+    ret
+  }
+
+  dup pushi 1 swap subl pushp fib call
+  swap
+  pushi 2 swap subl pushp fib call
+  addl
+  ret
+
+:main
+  set n 33
+  pushp init call
+  pushl n
+  pushp fib call
+
+  pushp puti call
+  pushc '\n'
+  pushp putchar call
+
+  hlt

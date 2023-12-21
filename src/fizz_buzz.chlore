@@ -1,0 +1,51 @@
+:putchar
+  pushi 0 pushi 2 invoke
+  ret
+
+:puti
+  pushi 0 pushi 1 invoke
+  ret
+
+:putstr
+  pushi 0 pushi 0 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:fizz_buzz
+  pushl 1 addl
+
+  if (dup pushi 15 swap reml zr) {
+    pushp "fizz buzz\n"
+    pushp putstr call
+  }
+
+  else if (dup pushi 3 swap reml zr) {
+    pushp "fizz\n"
+    pushp putstr call
+  }
+
+  else if (dup pushi 5 swap reml zr) {
+    pushp "buzz\n"
+    pushp putstr call
+  }
+
+  else {
+    dup pushp puti call
+    pushc '\n' pushp putchar call
+  }
+
+  if (dup pushl MAX_CNT ne) {
+    pushp fizz_buzz rcall
+  }
+
+  ret
+
+:main
+  set MAX_CNT 100
+  pushp init call
+  pushi 0
+  pushp fizz_buzz call
+  hlt
