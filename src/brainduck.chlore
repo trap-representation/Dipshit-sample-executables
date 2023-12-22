@@ -1,0 +1,162 @@
+:putchar
+  pushi 0 pushi 2 invoke
+  ret
+
+:readin
+  pushi 0 pushi 4 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:jump_to_matching_cbr
+  if (dup loadc pushc '[' eq) {
+    get3 pushi 1 addl write3
+  }
+  else if (dup loadc pushc ']' eq) {
+    if (get3 zr) {
+      ret
+    }
+    else {
+      get3 pushi 1 swap subl write3
+    }
+  }
+
+  pushi 1 addp
+
+  pushp jump_to_matching_cbr rcall
+
+:jump_to_matching_obr
+  if (dup loadc pushc ']' eq) {
+    get3 pushi 1 addl write3
+  }
+  else if (dup loadc pushc '[' eq) {
+    if (get3 zr) {
+      ret
+    }
+    else {
+      get3 pushi 1 swap subl write3
+    }
+  }
+
+  pushi 1 subp
+
+  pushp jump_to_matching_obr rcall
+
+:brainduck_eval
+  if (pushl EXEC_CYCLES get4 gt) {
+    pop
+    pop
+    ret
+  }
+
+  get4 pushi 1 addl write4
+
+  if (over over eq) {
+    pop
+    pop
+    ret
+  }
+
+  if (dup loadc pushc '>' eq) {
+    get1 pushi 1 addl write1
+  }
+  else if (dup loadc pushc '<' eq) {
+    get1 pushi 1 swap subl write1
+  }
+  else if (dup loadc pushc '+' eq) {
+    get1 loaduc pushi 1 adduc get1 storeuc
+  }
+  else if (dup loadc pushc '.' eq) {
+    get1 loaduc
+    pushp putchar call
+  }
+  else if (dup loadc pushc ',' eq) {
+    get2 loaduc get1 storeuc
+    get2 pushi 1 addl write2
+  }
+  else if (dup loadc pushc '-' eq) {
+    get1 loaduc pushi 1 swap subuc get1 storeuc
+  }
+  else if (dup loadc pushc '[' eq) {
+    if (get1 loaduc zr) {
+      pushi 1 addp
+      pushi 0 write3
+      pushp jump_to_matching_cbr call
+    }
+  }
+  else if (dup loadc pushc ']' eq) {
+    if (get1 loaduc nz) {
+      pushi 1 subp
+      pushi 0 write3
+      pushp jump_to_matching_obr call
+    }
+  }
+
+  pushi 1 addp
+
+  pushp brainduck_eval rcall
+
+:get_input_loc
+  if (over over eq) {
+    pop
+    pop
+    ret
+  }
+
+  if (dup loadc pushc '#' eq) {
+    pushi 1 addp write2
+    pop
+    ret
+  }
+
+  get3 pushi 1 addl write3
+
+  pushi 1 addp
+
+  pushp get_input_loc rcall
+
+:initialize_cells_r
+  if (dup pushp PROG_START eq) {
+    pop
+    ret
+  }
+
+  pushi 0 over storeuc
+
+  pushi 1 addp
+
+  pushp initialize_cells_r rcall
+
+:initialize_cells
+  pushp 0
+  pushp initialize_cells_r call
+  ret
+
+:main
+  set PROG_START 30000
+  set EXEC_CYCLES 1048576
+
+  pushp init call
+
+  pushp initialize_cells call
+
+  pushp PROG_START
+  pushi 1048576 pushi 9 mull
+  pushp readin call
+  get0 write3
+
+  pushp PROG_START get3 addp write2
+  pushp PROG_START get3 addp
+  pushp PROG_START
+  pushi 0 write3
+  pushp get_input_loc call
+
+  pushi 0 write1
+  pushi 1 write4
+  pushp PROG_START get3 addp
+  pushp PROG_START
+  pushp brainduck_eval call
+
+  hlt

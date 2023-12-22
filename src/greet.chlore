@@ -1,0 +1,75 @@
+:putchar
+  pushi 0 pushi 2 invoke
+  ret
+
+:eofin
+  pushi 0 pushi 5 invoke
+  ret
+
+:readin
+  pushi 0 pushi 4 invoke
+  ret
+
+:putstr
+  pushi 0 pushi 0 invoke
+  ret
+
+:init
+  pushi 0 open
+  ret
+
+:write_until_newline_r
+  if (over over eq) {
+    pop
+    pop
+    ret
+  }
+
+  if (dup loadc pushc '\n' eq) {
+    pop
+    pop
+    ret
+  }
+
+  dup loadc
+  pushp putchar call
+
+  pushi 1 addp
+
+  pushp write_until_newline_r rcall
+
+:write_until_newline
+  over swap addp swap
+  pushp write_until_newline_r call
+  ret
+
+:greet
+  pushp 0
+  pushi 512
+  pushp readin call
+  get0 write1
+
+  pushp "Hello, "
+  pushp putstr call
+
+  pushp 0
+  get1
+  pushp write_until_newline call
+
+  pushc '\n'
+  pushp putchar call
+
+  ret
+
+:main
+  pushp init call
+
+  if (pushp eofin call) {
+    pushp "Please enter your name in the textbox.\n"
+    pushp putstr call
+    hlt
+  }
+
+  pushp greet call
+
+  hlt
